@@ -10,98 +10,24 @@ import {
   Modal, 
   FuzzySuggestModal 
 } from 'obsidian';
-interface MyPluginSettings {
+
+interface SuikaUltilitySettings {
   baseFolder: string;
   baseClassFolder: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: SuikaUltilitySettings = {
   baseFolder: 'Life',
   baseClassFolder: 'Class'
 };
 
-class FolderPickerModal extends FuzzySuggestModal<string> {
-  baseFolder: string;
-  resolve: (value: string | PromiseLike<string>) => void;
-
-  constructor(app: App, baseFolder: string) {
-    super(app);
-    this.baseFolder = baseFolder;
-  }
-
-  getItems(): string[] {
-    const folderItems = this.app.vault.getAllLoadedFiles()
-      .filter(f => f.path.startsWith(this.baseFolder) && !(f instanceof TFile))
-      .map(f => f.path);
-    return folderItems.length > 0 ? folderItems : [this.baseFolder];
-  }
-
-  getItemText(item: string): string {
-    return item;
-  }
-
-  onChooseItem(item: string): void {
-    this.resolve(item);
-  }
-
-  openModal(): Promise<string> {
-    return new Promise(resolve => {
-      this.resolve = resolve;
-      this.open();
-    });
-  }
-}
-
-class FilenameModal extends Modal {
-  onSubmit: (filename: string) => void;
-
-  constructor(app: App, onSubmit: (filename: string) => void) {
-    super(app);
-    this.onSubmit = onSubmit;
-  }
-
-  onOpen() {
-    const { contentEl } = this;
-    contentEl.createEl('h2', { text: 'Enter Filename' });
-
-    const input = contentEl.createEl('input', { type: 'text' });
-    input.style.width = '100%';
-    input.placeholder = 'Enter the filename here...';
-
-    const submitButton = contentEl.createEl('button', { text: 'Submit' });
-    submitButton.style.marginTop = '10px';
-    submitButton.style.width = '100%';
-
-    submitButton.addEventListener('click', () => {
-      const filename = input.value.trim();
-      if (filename) {
-        this.onSubmit(filename);
-        this.close();
-      } else {
-        new Notice('Filename cannot be empty!');
-      }
-    });
-
-    input.addEventListener('keypress', (event) => {
-      if (event.key === 'Enter') {
-        submitButton.click();
-      }
-    });
-  }
-
-  onClose() {
-    const { contentEl } = this;
-    contentEl.empty();
-  }
-}
 
 
-
-export default class MyPlugin extends Plugin {
-  settings: MyPluginSettings;
+export default class SuikaUltility extends Plugin {
+  settings: SuikaUltilitySettings;
 
   async onload() {
-    console.log('Loading MyPlugin...');
+    console.log('Loading SuikaUltility...');
 
     await this.loadSettings();
 
@@ -122,7 +48,7 @@ export default class MyPlugin extends Plugin {
     });
 
 
-    this.addSettingTab(new MyPluginSettingTab(this.app, this));
+    this.addSettingTab(new SuikaUltilitySettingTab(this.app, this));
 
     this.registerEvent(
       this.app.workspace.on('editor-paste', this.handlePaste.bind(this))
@@ -130,7 +56,7 @@ export default class MyPlugin extends Plugin {
   }
 
   onunload() {
-    console.log('Unloading MyPlugin...');
+    console.log('Unloading SuikaUltility...');
   }
 
   handlePaste(evt: ClipboardEvent, editor: CodeMirror.Editor, markdownView: MarkdownView) {
@@ -223,10 +149,10 @@ export default class MyPlugin extends Plugin {
   }
 }
 
-class MyPluginSettingTab extends PluginSettingTab {
-  plugin: MyPlugin;
+class SuikaUltilitySettingTab extends PluginSettingTab {
+  plugin: SuikaUltility;
 
-  constructor(app: App, plugin: MyPlugin) {
+  constructor(app: App, plugin: SuikaUltility) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -236,7 +162,7 @@ class MyPluginSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.createEl('h2', { text: 'Settings for MyPlugin' });
+    containerEl.createEl('h2', { text: 'Settings for SuikaUltility' });
 
     new Setting(containerEl)
       .setName('Base Folder')
@@ -248,5 +174,95 @@ class MyPluginSettingTab extends PluginSettingTab {
           this.plugin.settings.baseFolder = value;
           await this.plugin.saveSettings();
         }));
+    
+    new Setting(containerEl)
+      .setName('Base Class Folder')
+      .setDesc('Base folder for class notes')
+      .addText(text => text
+        .setPlaceholder('Enter base class folder')
+        .setValue(this.plugin.settings.baseClassFolder)
+        .onChange(async (value) => {
+          this.plugin.settings.baseClassFolder = value;
+          await this.plugin.saveSettings();
+        }));
   }
 }
+
+class FolderPickerModal extends FuzzySuggestModal<string> {
+  baseFolder: string;
+  resolve: (value: string | PromiseLike<string>) => void;
+
+  constructor(app: App, baseFolder: string) {
+    super(app);
+    this.baseFolder = baseFolder;
+  }
+
+  getItems(): string[] {
+    const folderItems = this.app.vault.getAllLoadedFiles()
+      .filter(f => f.path.startsWith(this.baseFolder) && !(f instanceof TFile))
+      .map(f => f.path);
+    return folderItems.length > 0 ? folderItems : [this.baseFolder];
+  }
+
+  getItemText(item: string): string {
+    return item;
+  }
+
+  onChooseItem(item: string): void {
+    this.resolve(item);
+  }
+
+  openModal(): Promise<string> {
+    return new Promise(resolve => {
+      this.resolve = resolve;
+      this.open();
+    });
+  }
+}
+
+class FilenameModal extends Modal {
+  onSubmit: (filename: string) => void;
+
+  constructor(app: App, onSubmit: (filename: string) => void) {
+    super(app);
+    this.onSubmit = onSubmit;
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.createEl('h2', { text: 'Enter Filename' });
+
+    const input = contentEl.createEl('input', { type: 'text' });
+    input.style.width = '100%';
+    input.placeholder = 'Enter the filename here...';
+
+    const submitButton = contentEl.createEl('button', { text: 'Submit' });
+    submitButton.style.marginTop = '10px';
+    submitButton.style.width = '100%';
+
+    submitButton.addEventListener('click', () => {
+      const filename = input.value.trim();
+      if (filename) {
+        this.onSubmit(filename);
+        this.close();
+      } else {
+        new Notice('Filename cannot be empty!');
+      }
+    });
+
+    input.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        submitButton.click();
+      }
+    });
+  }
+
+  onClose() {
+    const { contentEl } = this;
+    contentEl.empty();
+  }
+}
+
+
+
+//3.2.4 代码解析

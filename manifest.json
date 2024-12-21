@@ -1,9 +1,9 @@
 {
-	"id": "daily-note",
-	"name": "Daily Note",
-	"version": "1.0.0",
+	"id": "suika-ultility",
+	"name": "Suika ultility",
+	"version": "1.4.0",
 	"minAppVersion": "0.15.0",
-	"description": "A little plugin to help you write daily notes",
+	"description": "A little plugin to do little things.",
 	"author": "suika",
 	"authorUrl": "https://tewi.me",
 	"fundingUrl": "https://tewi.me",
