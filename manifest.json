@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "daily-note",
+	"name": "Daily Note",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "A little plugin to help you write daily notes",
+	"author": "suika",
+	"authorUrl": "https://tewi.me",
+	"fundingUrl": "https://tewi.me",
 	"isDesktopOnly": false
 }
